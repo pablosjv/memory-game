@@ -8,11 +8,29 @@
     </style>
     <body>
         <div id="wrapper">
+            <div id='start'>
+                Start
+            </div>
             <div id="score"> </div>
             <div id="message"> </div>
             <div id="gameboard"> </div>
         </div>
-        <script></script>
+        <script>
+            var imagesName = [];
+            var startButton = document.getElementById('start');
+            // Array for the images
+            for (var i = 1; i <= 6; i++) {
+                imagesName.push('image'+i+'.jpg');
+            }
+
+            //event listeners
+            startButton.addEventListener('click', startGame);
+
+            function startGame(){
+                startButton.style.display = 'none';
+                console.log('STARTED!!');
+            }
+        </script>
     </body>
 
 </html>

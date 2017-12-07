@@ -5,32 +5,119 @@
         <title>Memory game</title>
     </head>
     <style>
+        .btn {
+          background: #3498db;
+          text-align: center;
+          -webkit-border-radius: 28;
+          -moz-border-radius: 28;
+          border-radius: 28px;
+          font-family: Arial;
+          color: #ffffff;
+          font-size: 20px;
+          padding: 10px 20px 10px 20px;
+          text-decoration: none;
+        }
+        .btn:hover {
+          background: #3cb0fd;
+          text-decoration: none;
+        }
+        .flipImage{
+            width: 100px;
+        }
+        .gameCard{
+          display: inline-block;
+          border: 1px solid black;
+        }
+
     </style>
     <body>
         <div id="wrapper">
-            <div id='start'>
-                Start
-            </div>
+            <div id='start' class="btn">Start</div>
             <div id="score"> </div>
             <div id="message"> </div>
             <div id="gameboard"> </div>
         </div>
         <script>
-            var imagesName = [];
+            var imagesNames = [];
+            var shuffled = [];
+            var flippedOver = [];
+            var gameBoard = document.getElementById('gameboard')
+            var gamePlay = false;
+            var cardFliped = -1;
             var startButton = document.getElementById('start');
-            // Array for the images
-            for (var i = 1; i <= 6; i++) {
-                imagesName.push('image'+i+'.jpg');
-            }
 
             //event listeners
             startButton.addEventListener('click', startGame);
 
             function startGame(){
                 startButton.style.display = 'none';
+                if(!gamePlay){
+                    gamePlay = true;
+                    buildArray();
+                    shuffled = imagesNames.concat(imagesNames);
+                    shuffled = shuffleArray(shuffled);
+                    console.log(shuffled);
+                    buildBoard()
+                 }
                 console.log('STARTED!!');
             }
+
+            function buildArray(){
+                // Array for the images
+                for (var i = 1; i <= 6; i++) {
+                    imagesNames.push(i+'.jpg');
+                }
+            }
+
+            function shuffleArray(array){
+                for (var i = array.length-1; i > 0; i--) {
+                    var indexToShuffle = Math.floor(Math.random() * (i+1));
+                    var element = array[i];
+                    array[i] = array[indexToShuffle];
+                    array[indexToShuffle] = element
+                }
+                return array;
+            }
+
+
+            function buildBoard(){
+                var htmlString = '';
+                var html = "";
+                for (var i = 0; i < (shuffled.length-1); i++) {
+                    htmlString += `
+                        <div class="gameCard">
+                            <div class="gameCard">
+                                <image id="card` + i + `" src="images/back.jpg"
+                                    onclick="pickCard(` + i + `, this)"
+                                    class="flipImage">
+                                </image>
+                            </div>
+                        </div>
+                    `;
+                    html += '<div class="gameTile"><div class="gameTile">';
+                    html += '<img id="cardz' + i + '" src="images/back.jpg" onclick="pickCard(' + i + ',this)" class="flipImage"></div></div>';
+                }
+                gameBoard.innerHTML = htmlString;
+                // gameBoard.innerHTML = html;
+            }
+
+            function pickCard(cardIndex, t){
+                if (cardFliped >= 0) {
+                    //second card Flipped
+                    if (cardFliped != cardIndex) {
+                        // second card is new
+                        t.src = "images/" + shuffled[cardIndex];
+                        var secondCard = cardIndex;
+                    }
+                }else {
+                    cardFliped = cardIndex;
+                    t.src = "images/" + shuffled[cardIndex];
+                }
+            }
+
+
         </script>
+
     </body>
 
 </html>

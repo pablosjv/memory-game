@@ -43,6 +43,7 @@
             var flippedOver = [];
             var gameBoard = document.getElementById('gameboard')
             var gamePlay = false;
+            var playLock = false;
             var cardFliped = -1;
             var startButton = document.getElementById('start');
 
@@ -83,7 +84,8 @@
             function buildBoard(){
                 var htmlString = '';
                 var html = "";
-                for (var i = 0; i < (shuffled.length-1); i++) {
+                for (var i = 0; i < shuffled.length; i++) {
+                    console.log(shuffled[i]);
                     htmlString += `
                         <div class="gameCard">
                             <div class="gameCard">
@@ -94,24 +96,55 @@
                             </div>
                         </div>
                     `;
-                    html += '<div class="gameTile"><div class="gameTile">';
-                    html += '<img id="cardz' + i + '" src="images/back.jpg" onclick="pickCard(' + i + ',this)" class="flipImage"></div></div>';
                 }
                 gameBoard.innerHTML = htmlString;
                 // gameBoard.innerHTML = html;
             }
 
+            function inArray(value, array){
+                return array.indexOf(value) > -1;
+            }
+
+            function cardFlip(t, cardIndex){
+                t.src = "images/" + shuffled[cardIndex];
+                flippedOver.push(t.id);
+            }
+
+            function hideCard(cardId) {
+                var cardId = flippedOver.pop()
+                document.getElementById(cardId).src = "images/back.jpg"
+            }
+
             function pickCard(cardIndex, t){
-                if (cardFliped >= 0) {
-                    //second card Flipped
-                    if (cardFliped != cardIndex) {
-                        // second card is new
-                        t.src = "images/" + shuffled[cardIndex];
-                        var secondCard = cardIndex;
+                if (!inArray(t.id, flippedOver) && !playLock){
+                    if (cardFliped >= 0) {
+                        // SECOND CARD FLIPPED
+                        if (cardFliped != cardIndex) {
+                            cardFlip(t, cardIndex);
+                            var secondCard = cardIndex;
+                        }
+                        if (shuffled[secondCard] === shuffled[cardFliped]) {
+                            // is a match
+                            console.log('MAAATCH')
+                            playLock = false;
+                        } else {
+                            console.log('NOT A MATCH');
+                            // not match - Reflip cards
+                            playLock = true;
+                            timer = setTimeout(function () {
+                                // hide the last two cards flipped
+                                for (var i = 0; i < 2; i++) {
+                                    hideCard()
+                                }
+                                playLock = false;
+                            }, 1000);
+                        }
+                        cardFliped = -1;
+                    }else {
+                        // FIRST CARD FLIPPED
+                        cardFliped = cardIndex;
+                        cardFlip(t, cardIndex);
                     }
-                }else {
-                    cardFliped = cardIndex;
-                    t.src = "images/" + shuffled[cardIndex];
                 }
             }
 
